@@ -29,7 +29,12 @@ where
 {
     let br = BufReader::new(File::open(filename)?);
     br.lines()
-        .map(|line| line.and_then(|v| u32::from_str_radix(v.as_ref(), 2).map_err(|e| Error::new(ErrorKind::InvalidData, e))))
+        .map(|line| {
+            line.and_then(|v| {
+                u32::from_str_radix(v.as_ref(), 2)
+                    .map_err(|e| Error::new(ErrorKind::InvalidData, e))
+            })
+        })
         .collect()
 }
 
@@ -69,7 +74,6 @@ fn get_life_support_mask(array: &Vec<u32>, use_least_common: bool) -> u32 {
     for i in 0..ARRAY_SIZE {
         let mut value_counter = 0;
         for value in array {
-
             let value_to_compare = value >> (ARRAY_SIZE - i);
             let current_mask = mask >> (ARRAY_SIZE - i);
 
@@ -82,8 +86,7 @@ fn get_life_support_mask(array: &Vec<u32>, use_least_common: bool) -> u32 {
 
             if (value >> (ARRAY_SIZE - 1 - i) & 0x1) == 1 {
                 value_counter += 1;
-            }
-            else {
+            } else {
                 value_counter -= 1;
             }
         }
@@ -97,8 +100,7 @@ fn get_life_support_mask(array: &Vec<u32>, use_least_common: bool) -> u32 {
 
         if value_counter >= 0 && use_least_common == false {
             mask |= 1 << (ARRAY_SIZE - 1 - i);
-        }
-        else if value_counter < 0 && use_least_common == true {
+        } else if value_counter < 0 && use_least_common == true {
             mask |= 1 << (ARRAY_SIZE - 1 - i);
         }
     }
@@ -106,9 +108,8 @@ fn get_life_support_mask(array: &Vec<u32>, use_least_common: bool) -> u32 {
 }
 
 fn get_life_support_rating(array: &Vec<u32>) -> u32 {
-
     let oxygen_generator_rating = get_life_support_mask(&array, false);
-    
+
     let co2_scrubber_rating = get_life_support_mask(&array, true);
 
     oxygen_generator_rating * co2_scrubber_rating
