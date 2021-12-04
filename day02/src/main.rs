@@ -1,7 +1,9 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Error, ErrorKind};
+use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
+
+use std::collections::HashMap;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -10,62 +12,54 @@ fn main() {
 
     let data = read_lines(&args[1]).unwrap();
 
+    let mut positions: HashMap<String, i32> = HashMap::new();
+
+    let _ = &data
+        .clone()
+        .into_iter()
+        .for_each(|(key, value)| *positions.entry(key).or_insert(0) += value);
+
     println!(
         "(Part 1) Final Position: {}",
-        get_final_position(&data, false)
+        positions["forward"] * (positions["down"] - positions["up"])
     );
+
+    let mut horizontal_position = 0;
+    let mut aim = 0;
+    let mut depth = 0;
+    let _ = &data.clone().into_iter().for_each(|(key, value)| {
+        match key.as_str() {
+            "forward" => {horizontal_position += value; depth += aim * value},
+            "up" => aim -= value,
+            "down" => aim += value,
+            _ => unreachable!("Invalid key")
+        }
+    });
 
     println!(
         "(Part 2) Final Position: {}",
-        get_final_position(&data, true)
+        horizontal_position * depth
     );
 }
 
-fn read_lines<P>(filename: P) -> Result<Vec<String>, Error>
+fn read_lines<P>(filename: P) -> Result<Vec<(String, i32)>, Error>
 where
     P: AsRef<Path>,
 {
     let br = BufReader::new(File::open(filename)?);
     br.lines()
-        .map(|line| line.and_then(|v| v.parse().map_err(|e| Error::new(ErrorKind::InvalidData, e))))
+        .map(|line| {
+            line.and_then(|v| {
+                let split_line: Vec<String> = v
+                    .to_string()
+                    .split_whitespace()
+                    .map(|s| s.to_string())
+                    .collect();
+                Ok((
+                    split_line[0].to_string(),
+                    split_line[1].parse::<i32>().unwrap(),
+                ))
+            })
+        })
         .collect()
-}
-
-fn get_final_position(array: &Vec<String>, calculate_aim: bool) -> i32 {
-    let mut final_value: i32 = 0;
-    let mut horizontal_position: i32 = 0;
-    let mut depth: i32 = 0;
-    let mut aim: i32 = 0;
-    for line in array {
-        let split_line: Vec<String> = line.split_whitespace().map(|s| s.to_string()).collect();
-        let direction = &split_line[0];
-        let value = split_line[1].parse::<i32>().unwrap();
-
-        match direction.as_ref() {
-            "up" => {
-                if calculate_aim {
-                    aim -= value
-                } else {
-                    depth -= value
-                }
-            }
-            "down" => {
-                if calculate_aim {
-                    aim += value
-                } else {
-                    depth += value
-                }
-            }
-            "forward" => {
-                horizontal_position += value;
-                if calculate_aim {
-                    depth += value * aim
-                }
-            }
-            _ => unreachable!("Should not get here"),
-        }
-
-        final_value = horizontal_position * depth;
-    }
-    final_value
 }
