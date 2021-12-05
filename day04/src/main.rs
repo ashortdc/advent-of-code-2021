@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Cell {
     value: u8,
     marked: bool,
@@ -18,7 +18,7 @@ impl Cell {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 pub struct Board {
     grid: [Cell; Board::HEIGHT * Board::WIDTH],
     is_board_solved: bool,
@@ -52,22 +52,21 @@ impl Board {
 
     // Mark the board if the value exists in the board. If it does, check to
     // see if the board is solved.
-    pub fn mark_value(&mut self, value: u8) -> bool {
+    pub fn mark_value(&mut self, value: u8) -> Option<u32> {
         for i in 0..self.grid.len() {
             if self.grid[i].value == value {
                 self.grid[i].marked = true;
                 if self.check_if_board_is_solved(i) && self.is_board_solved == false {
-                    println!("\tBoard solved! Score: {}", self.score_board(i));
                     self.is_board_solved = true;
-                    return true;
+                    return Some(self.score_board(i));
                 }
             }
         }
-        false
+        None
     }
 
     // Return whether a row or column is complete
-    pub fn check_if_board_is_solved(&mut self, index: usize) -> bool {
+    pub fn check_if_board_is_solved(&self, index: usize) -> bool {
         self.check_row(index) || self.check_column(index)
     }
 
@@ -112,27 +111,18 @@ fn main() {
     println!("INPUT: {:?}", &args[1]);
 
     let (numbers, mut boards) = read_file(&args[1]).unwrap();
-
-    // Part 1:
-    println!("Part 1:");
-    let mut part_1_boards = boards.clone();
-    let part_1_numbers = numbers.clone();
-    'outer: for number in part_1_numbers {
-        for board in &mut part_1_boards {
-            if board.mark_value(number) {
-                break 'outer;
+    let mut board_scores: Vec<u32> = Vec::new();
+    for number in numbers {
+        for board in &mut boards {
+            if let Some(board_score) = board.mark_value(number) {
+                board_scores.push(board_score);
             }
         }
     }
 
-    println!("Part 2:");
+    println!("First board score: {}", board_scores.first().unwrap());
+    println!("Last board score : {}", board_scores.last().unwrap());
 
-    // Part 2:
-    for number in numbers {
-        for board in &mut boards {
-            board.mark_value(number);
-        }
-    }
 }
 
 fn read_file<P>(filename: P) -> Result<(Vec<u8>, Vec<Board>), Error>
