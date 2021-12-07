@@ -1,6 +1,6 @@
 use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Error, ErrorKind};
+use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
 
 fn main() {
@@ -8,7 +8,7 @@ fn main() {
 
     println!("INPUT: {:?}", &args[1]);
 
-    let data = read_lines(&args[1]).unwrap();
+    let data = read_file(&args[1]).unwrap();
 
     for i in [1, 3] {
         let _ = println!(
@@ -23,12 +23,12 @@ fn main() {
     }
 }
 
-fn read_lines<P>(filename: P) -> Result<Vec<i32>, Error>
+fn read_file<P>(filename: P) -> Result<Vec<i32>, Error>
 where
     P: AsRef<Path>,
 {
     let br = BufReader::new(File::open(filename)?);
     br.lines()
-        .map(|line| line.and_then(|v| v.parse().map_err(|e| Error::new(ErrorKind::InvalidData, e))))
+        .map(|line| line.and_then(|v| Ok(v.parse().unwrap())))
         .collect()
 }
