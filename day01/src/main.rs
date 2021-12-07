@@ -11,16 +11,15 @@ fn main() {
     let data = read_lines(&args[1]).unwrap();
 
     for i in [1, 3] {
-        let mut count = 0;
-        let _ = &data[0..data.len() - i + 1]
-            .iter()
-            .zip(&data[i..data.len()])
-            .for_each(|(x, y)| {
-                if x < y {
-                    count += 1
-                }
-            });
-        println!("(Window = {}) Count: {}", i, count);
+        let _ = println!(
+            "(Window = {}) Count: {}",
+            i,
+            &data[0..data.len() - i + 1]
+                .iter()
+                .zip(&data[i..data.len()])
+                .filter(|(&x, &y)| x < y)
+                .count()
+        );
     }
 }
 
