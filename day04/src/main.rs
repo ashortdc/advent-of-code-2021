@@ -39,7 +39,7 @@ impl Board {
     pub fn new() -> Self {
         Board {
             grid: [Cell::new(); Board::HEIGHT * Board::WIDTH],
-            is_board_solved: false
+            is_board_solved: false,
         }
     }
 
@@ -72,7 +72,7 @@ impl Board {
 
     // Checks a row given an index
     fn check_row(&self, index: usize) -> bool {
-        let starting_position = index - (index % Board::WIDTH); 
+        let starting_position = index - (index % Board::WIDTH);
         for i in starting_position..starting_position + Board::WIDTH {
             if self.grid[i].marked == false {
                 return false;
@@ -122,7 +122,6 @@ fn main() {
 
     println!("First board score: {}", board_scores.first().unwrap());
     println!("Last board score : {}", board_scores.last().unwrap());
-
 }
 
 fn read_file<P>(filename: P) -> Result<(Vec<u8>, Vec<Board>), Error>

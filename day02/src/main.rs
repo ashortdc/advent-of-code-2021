@@ -27,19 +27,20 @@ fn main() {
     let mut horizontal_position = 0;
     let mut aim = 0;
     let mut depth = 0;
-    let _ = &data.clone().into_iter().for_each(|(key, value)| {
-        match key.as_str() {
-            "forward" => {horizontal_position += value; depth += aim * value},
+    let _ = &data
+        .clone()
+        .into_iter()
+        .for_each(|(key, value)| match key.as_str() {
+            "forward" => {
+                horizontal_position += value;
+                depth += aim * value
+            }
             "up" => aim -= value,
             "down" => aim += value,
-            _ => unreachable!("Invalid key")
-        }
-    });
+            _ => unreachable!("Invalid key"),
+        });
 
-    println!(
-        "(Part 2) Final Position: {}",
-        horizontal_position * depth
-    );
+    println!("(Part 2) Final Position: {}", horizontal_position * depth);
 }
 
 fn read_lines<P>(filename: P) -> Result<Vec<(String, i32)>, Error>
