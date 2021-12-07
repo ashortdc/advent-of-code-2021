@@ -8,12 +8,13 @@ fn main() {
 
     println!("INPUT: {:?}", &args[1]);
 
-    let crabs = read_file(&args[1]).unwrap();    
+    let crabs = read_file(&args[1]).unwrap();
 
     let mut min = std::u32::MAX;
-    let max_vector_value = crabs.iter().max().unwrap();
+    let min_vector_value = *crabs.iter().min().unwrap() as usize;
+    let max_vector_value = *crabs.iter().max().unwrap() as usize;
 
-    for i in 0..*max_vector_value as usize {
+    for i in min_vector_value..max_vector_value {
         let mut sum: u32 = 0;
         for j in 0..crabs.len() {
             let diff = crabs[j] as i32 - i as i32;
@@ -28,7 +29,7 @@ fn main() {
 
     min = std::u32::MAX;
 
-    for i in 0..*max_vector_value as usize {
+    for i in min_vector_value as usize..max_vector_value as usize {
         let mut sum: u32 = 0;
         for j in 0..crabs.len() {
             let diff = crabs[j] as i32 - i as i32;
@@ -38,7 +39,7 @@ fn main() {
             min = sum;
         }
     }
-    
+
     println!("Part 2: {}", min);
 }
 
