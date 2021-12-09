@@ -1,0 +1,2 @@
+INPUT: "day09/data/input.txt"
+Part 2: 1038240
