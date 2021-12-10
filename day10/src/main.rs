@@ -1,5 +1,5 @@
-use std::env;
 use std::collections::HashMap;
+use std::env;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
@@ -7,12 +7,7 @@ use std::path::Path;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let mapping = HashMap::from([
-        ('(', ')'),
-        ('[', ']'),
-        ('{', '}'),
-        ('<', '>')
-    ]);
+    let mapping = HashMap::from([('(', ')'), ('[', ']'), ('{', '}'), ('<', '>')]);
 
     println!("INPUT: {:?}", &args[1]);
 
@@ -23,22 +18,19 @@ fn main() {
 
     for line in lines {
         let mut stack: Vec<char> = Vec::new();
-        // println!("Looking at line: {}", line);
         for c in line.chars() {
             if c == '(' || c == '{' || c == '[' || c == '<' {
                 stack.push(c);
-            }
-            else {
+            } else {
                 if let Some(popped_value) = stack.pop() {
                     let expected_value = mapping[&popped_value];
                     if expected_value != c {
-                        // println!("\t\tExpected {}, but found {} instead", expected_value, c);
                         part_1_running_total += match c {
                             ')' => 3,
                             ']' => 57,
                             '}' => 1197,
                             '>' => 25137,
-                            _ => unreachable!("Invalid character!")
+                            _ => unreachable!("Invalid character!"),
                         };
                         stack.clear();
                         break;
@@ -57,13 +49,12 @@ fn main() {
                         ']' => 2,
                         '}' => 3,
                         '>' => 4,
-                        _ => unreachable!("Invalid character!")
+                        _ => unreachable!("Invalid character!"),
                     };
                 }
             }
             part_2_scores.push(total);
         }
-
     }
 
     part_2_scores.sort();
