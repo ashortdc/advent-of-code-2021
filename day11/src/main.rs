@@ -38,15 +38,12 @@ fn main() {
                 break 'inner;
             }
         }
-        let mut did_all_flash = true;
 
         // Lastly, any value over 9 we set to 0.
         for line in lines.iter_mut() {
             for element in line.iter_mut() {
                 if *element > 9 {
                     *element = 0;
-                } else {
-                    did_all_flash = false;
                 }
             }
         }
@@ -57,7 +54,7 @@ fn main() {
             println!("(Part 1) Num Flashes: {}", num_flashes);
         }
 
-        if did_all_flash {
+        if already_flashed.len() == 100 {
             println!("(Part 2) All flashed at step {}", counter);
             break 'outer;
         }
